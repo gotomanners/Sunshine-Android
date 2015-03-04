@@ -4,7 +4,13 @@
     tools:context="com.gotomanners.android.sunshine.app.ForecastDetailActivity">
     <item
         android:id="@+id/action_settings"
-        android:orderInCategory="100"
+        android:orderInCategory="101"
         android:title="@string/action_settings"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_share"
+        android:title="@string/action_share"
+        app:showAsAction="always"
+        app:actionProviderClass=
+            "android.support.v7.widget.ShareActionProvider" />
 </menu>
