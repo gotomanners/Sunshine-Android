@@ -8,6 +8,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +16,6 @@ import android.widget.TextView;
 
 
 public class DetailActivity extends ActionBarActivity {
-
-    private ShareActionProvider mShareActionProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,24 +29,10 @@ public class DetailActivity extends ActionBarActivity {
         }
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.detail, menu);
-
-        // Locate MenuItem with ShareActionProvider
-        MenuItem shareItem = menu.findItem(R.id.action_share);
-
-        // Fetch and store ShareActionProvider
-        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
-
-        String weatherString = getIntent().getStringExtra(Intent.EXTRA_TEXT) + " #SunshineApp";
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, weatherString);
-
-        mShareActionProvider.setShareIntent(shareIntent);
 
         return true;
     }
@@ -70,35 +55,17 @@ public class DetailActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
-    // Call to update the share intent
-    private void setShareIntent(Intent shareIntent) {
-        if (mShareActionProvider != null) {
-            mShareActionProvider.setShareIntent(shareIntent);
-        }
-    }
-
-    /** Defines a default (dummy) share intent to initialize the action provider.
-     * However, as soon as the actual content to be used in the intent
-     * is known or changes, you must update the share intent by again calling
-     * mShareActionProvider.setShareIntent()
-     */
-    private Intent getDefaultIntent() {
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("image/*");
-        return intent;
-    }
-
     /**
      * A placeholder fragment containing a simple view.
      */
     public static class DetailFragment extends Fragment {
 
         private final String LOG_TAG = DetailFragment.class.getSimpleName();
-        private static final String FORECAST_SUNSHINE_HASHTAG = "#SunshineApp";
+        private static final String FORECAST_SUNSHINE_HASHTAG = " #SunshineApp";
         private String mForecastString;
 
         public DetailFragment() {
+            setHasOptionsMenu(true);
         }
 
         @Override
@@ -113,6 +80,31 @@ public class DetailActivity extends ActionBarActivity {
             textView.setText(mForecastString);
 
             return rootView;
+        }
+
+        private Intent createShareIntent() {
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+            shareIntent.setType("text/plain");
+            shareIntent.putExtra(Intent.EXTRA_TEXT, mForecastString + FORECAST_SUNSHINE_HASHTAG);
+            return shareIntent;
+        }
+
+        @Override
+        public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+            super.onCreateOptionsMenu(menu, inflater);
+            inflater.inflate(R.menu.detailfragment, menu);
+
+            // Locate MenuItem with ShareActionProvider
+            MenuItem shareItem = menu.findItem(R.id.action_share);
+
+            // Fetch and store ShareActionProvider
+            ShareActionProvider mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
+
+            if (mShareActionProvider != null) {
+                mShareActionProvider.setShareIntent(createShareIntent());
+            }
+
         }
     }
 }
