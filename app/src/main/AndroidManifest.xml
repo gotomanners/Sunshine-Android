@@ -37,7 +37,9 @@
 
         <provider
             android:name=".data.WeatherProvider"
-            android:authorities="com.gotomanners.android.sunshine.app" />
+            android:authorities="com.gotomanners.android.sunshine.app"
+            android:enabled="true"
+            android:exported="true" />
     </application>
 
 </manifest>
